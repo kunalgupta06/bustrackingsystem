@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Bus Routes and Arrival Times</title>
+    <style>
+        /* Styling for the left panel */
+        #left-panel {
+            position: absolute;
+            top: 0;
+            left: 0px; /* Start with the panel closed */
+            width: 250px;
+            height: 100%;
+            background-color: #f0f0f0;
+            padding: 20px;
+            box-shadow: 2px 0px 5px rgba(0, 0, 0, 0.2);
+            z-index: 2;
+            transition: left 0.3s ease;
+        }
+
+        #left-panel.opened {
+            left: 0; /* Open the panel */
+        }
+
+        /* Styling for the search container */
+        #search-container {
+            text-align: center; /* Center align the search container */
+            margin-bottom: 20px;
+        }
+
+        #search-bar {
+            width: 70%; /* Adjust the width as needed */
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+
+        #search-button {
+            width: 30%; /* Adjust the width as needed */
+            padding: 10px;
+            background-color: #007acc;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #search-button:hover {
+            background-color: #005a99;
+        }
+
+        /* Styling for the bus buttons container */
+        #bus-buttons-container {
+            margin-top: 20px; /* Adjust the margin to control the gap between search and buttons */
+        }
+
+        /* Styling for the bus buttons */
+        .bus-button {
+            display: block; /* Show all buttons by default */
+            width: 100%;
+            padding: 10px;
+            background-color: #0074D9;
+            color: white;
+            border: none;
+            border-radius: 5px; /* Add border radius for slightly rounded button ends */
+            font-size: 16px;
+            cursor: pointer;
+            margin-bottom: 10px; /* Adjust the margin to control the gap between buttons */
+            text-align: center;
+        }
+
+        .bus-button:hover {
+            background-color: #005a99;
+        }
+
+        /* Styling for the route details container */
+        #route-details {
+            margin-left: 270px; /* Adjust for the width of the left panel */
+            padding: 20px;
+        }
+
+        /* Styling for the bus route flow chart */
+        .route-flow-chart {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 20px;
+            box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .route-flow-chart h2 {
+            color: #0074D9;
+            font-size: 24px;
+            margin-bottom: 15px;
+        }
+
+        .route-flow-chart ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .route-flow-chart li {
+            margin-bottom: 10px;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .route-flow-chart li:before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: #0074D9;
+        }
+    </style>
+</head>
+<body>
+    <!-- Left panel -->
+    <div id="left-panel">
+        <div id="search-container">
+            <input type="text" id="search-bar" placeholder="Search Bus Number">
+            <button id="search-button">Search</button>
+        </div>
+        <div id="bus-buttons-container">
+            <button class="bus-button" data-bus-number="Bus Number 433">Bus Number 433</button>
+            <button class="bus-button" data-bus-number="Bus Number 889">Bus Number 889</button>
+            <button class="bus-button" data-bus-number="Bus Number 469">Bus Number 469</button>
+            <button class="bus-button" data-bus-number="Bus Number 874">Bus Number 874</button>
+            <!-- Add more buttons for other bus routes as needed -->
+        </div>
+    </div>
+
+    <!-- Route details container -->
+    <div id="route-details">
+        <!-- Bus route details will be displayed here -->
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        // Get references to DOM elements
+        const leftPanel = document.getElementById('left-panel');
+        const searchInput = document.getElementById('search-bar');
+        const searchButton = document.getElementById('search-button');
+        const busButtonsContainer = document.getElementById('bus-buttons-container');
+        const busButtons = document.querySelectorAll('.bus-button');
+        const routeDetailsContainer = document.getElementById('route-details');
+
+        // Event listener to handle bus number search
+        searchButton.addEventListener('click', () => {
+            const searchTerm = searchInput.value.trim();
+            if (searchTerm === "") {
+                // If the search box is empty, show all buttons
+                busButtonsContainer.appendChild(busButtonsContainer.querySelector('.bus-button'));
+            } else {
+                // Otherwise, filter and reorder buttons
+                const matchingButton = document.querySelector(`[data-bus-number="Bus Number ${searchTerm}"]`);
+                if (matchingButton) {
+                    busButtonsContainer.insertBefore(matchingButton, busButtonsContainer.firstElementChild);
+                }
+            }
+        });
+
+        // Sample bus route data
+        const busRoutes = {
+    'Bus Number 433': [
+        'Badarpur Border - 6:00 AM',
+        'Jaitpur Crossing - 6:01 AM',
+        'Power House - 6:05 AM',
+        'Onida Factory - 6:08 AM',
+        'Aali Village - 6:09 AM',
+        'Haldiram / Mohan Estate Metro Station - 6:10 AM',
+        'Maruti Factory - 6:12 AM',
+        'Madanpur Khadar - 6:14 AM',
+        'Sarita Vihar - 6:16 AM',
+        'Sarita Vihar Crossing - 6:19 AM',
+        'Jasola Vihar - 6:21 AM',
+        'Shahin Bagh - 6:23 AM',
+        'Kalindi Kunj - 6:25 AM',
+        'Sector 94 - 6:31 AM',
+        'Sector 18/37 - 6:37 AM',
+        'Botanical Garden - 6:38 AM',
+        'Noida Sector 28 - 6:41 AM',
+        'Sector 18 - 6:43 AM',
+        'Rajnigandha Chowk - 6:45 AM',
+        'Sector 16 Noida Metro Station - 6:46 AM',
+        'Noida Sector 3 - 6:47 AM',
+        'Noida Sector 15 - 6:49 AM',
+        'Noida Sector 15 Bus Station - 6:50 AM',
+        'Sector 15 - 6:51 AM',
+        'Mayur Kunj - 6:53 AM',
+        'Mayur Place - 6:57 AM',
+        'Samachar Apartment - 7:00 AM',
+        'Mayur Vihar Phase 1 - 7:03 AM',
+        'Delhi Police Apartment - 7:04 AM',
+        'Akshardham Temple - 7:09 AM',
+        'Samaspur Jagir Village - 7:10 AM',
+        'Mother Dairy - 7:12 AM',
+        'Ganesh Nagar - 7:13 AM',
+        'S3 Sakar Pur School Block - 7:16 AM',
+        'S1 Sakar Pur School Block - 7:17 AM',
+        'Laxmi Nagar - 7:18 AM',
+        'Shakar Pur - 7:19 AM',
+        'Shakar Pur Crossing - 7:21 AM',
+        'Nirman Vihar - 7:22 AM',
+        'Swasthya Vihar - 7:24 AM',
+        'New Rajdhani Enclave - 7:25 AM',
+        'Karkardooma Crossing - 7:26 AM',
+        'Gagan Vihar - 7:27 AM',
+        'F1 Block Jagatpuri - 7:28 AM',
+        'A Block Jagatpuri - 7:30 AM',
+        'Radhey Puri - 7:31 AM',
+        'Arjun Nagar - 7:31 AM',
+        'Hans Apartment - 7:32 AM',
+        'East Krishna Nagar - 7:33 AM',
+        'Krishna Nagar A Block - 7:34 AM',
+        'Swarn Cinema - 7:35 AM',
+        'Krishna Nagar - 7:36 AM',
+        'Jheel Kuranja - 7:40 AM',
+        'Jheel - 7:40 AM'
+    ],
+    'Bus Number 889': [
+    'Rohini Sector 27 - 5:40 AM',
+    'B Block Shahbad Dairy - 5:46 AM',
+    'A Block Shahbad Dairy - 5:47 AM',
+    'Saint Xaviers School - 5:49 AM',
+    'Shahbad School - 5:50 AM',
+    'Shahbad Village - 5:52 AM',
+    'Delhi Engineering College - 5:53 AM',
+    'Rohini Sector 16 Crossing - 5:55 AM',
+    'Rohini Sector 16 - 5:58 AM',
+    'Rohini Sector 11 - 5:59 AM',
+    'Rithala Metro Station - 6:05 AM',
+    'Rajeev Gandhi Cancer Hospital - 6:07 AM',
+    'Rohini Sector 9 - 6:10 AM',
+    'Rohini East Metro - 6:14 AM',
+    'Madhuban Chowk - 6:14 AM',
+    'Madhuban Chowk - 6:15 AM',
+    'RU Block Pitampura - 6:17 AM',
+    'RU Block Pitampura - 6:17 AM',
+    'CD Block Pitampura - 6:18 AM',
+    'AP Block Pitampura - 6:19 AM',
+    'K.D. Block Pitampura - 6:21 AM',
+    'ND / DP Block Pitampura - 6:22 AM',
+    'D.D.A. Office / TV Tower - 6:24 AM',
+    'Shri Guru Gobind Singh College - 6:25 AM',
+    'Subhash Palace - 6:27 AM',
+    'Wazirpur Flyover - 6:28 AM',
+    'Shiv Mandir Shakurpur - 6:29 AM',
+    'Telephone Exchange - 6:30 AM',
+    'Britannia - 6:31 AM',
+    'Shakurpur Village - 6:34 AM',
+    'Punjabi Bagh - 6:36 AM',
+    'East Punjabi Bagh - 6:38 AM',
+    'Punjabi Bagh Crossing - 6:40 AM',
+    'Punjabi Bagh Club - 6:42 AM',
+    'E.S.I. Hospital - 6:44 AM',
+    'Rajdhani College - 6:46 AM',
+    'Rajouri Garden Market - 6:50 AM',
+    'Mayapuri Crossing - 6:53 AM',
+    'Government Press - 6:54 AM',
+    'Hari Nagar (Mohan Mandir) Mayapuri - 6:56 AM',
+    'Metal Forzing - 6:57 AM',
+    'Police Station Mayapuri - 6:59 AM',
+    'Gulab House - 7:00 AM',
+    'Junk Market - 7:03 AM',
+    'Maya Enclave BSES Office - 7:04 AM',
+    'Hari Nagar Clock Tower - 7:05 AM'
+],
+'Bus Number 469': [
+    'Ambedkar Nagar Terminal - 5:00 AM',
+    'Ambedkar Nagar Depot - 5:00 AM',
+    'Khanpur Village - 5:02 AM',
+    'G Block Dakshin Puri - 5:02 AM',
+    'Devli Crossing - 5:03 AM',
+    'Vayusenabad (Tigri) - 5:04 AM',
+    'Batra Hospital / Satya Narayan Mandir - 5:06 AM',
+    'Hamdard Nagar / Sangam Vihar - 5:07 AM',
+    'Majidia Hospital - 5:09 AM',
+    'Hamdard Library - 5:10 AM',
+    'Guru Ravi Das Mandir - 5:11 AM',
+    'Tara Apartment - 5:13 AM',
+    'D.D.A. Flats Kalkaji - 5:15 AM',
+    'Hanuman Mandir - 5:16 AM',
+    'A Block D.D.A. Flats Kalkaji - 5:16 AM',
+    'Govindpuri Extention Bus Stop - 5:17 AM',
+    'Rampuri - 5:17 AM',
+    'Govind Puri Gali Number 5 - 5:19 AM',
+    'Govind Puri - 5:20 AM',
+    'Kalkaji Depot - 5:21 AM',
+    'Govind Puri Metro Station - 5:23 AM',
+    'Kalkaji Temple - 5:25 AM',
+    'N.S.I.C. - 5:26 AM',
+    'Modi Mill - 5:27 AM',
+    'Okhla Sabzi Mandi - 5:28 AM',
+    'Sri Niwas Puri Depot - 5:30 AM',
+    'C Block East of Kailash - 5:31 AM',
+    'B Block East of Kailash - 5:31 AM',
+    'Garhi Village - 5:33 AM',
+    'Lajpat Nagar Crossing - 5:34 AM',
+    'PGDAV College - 5:35 AM',
+    'Nehru Nagar - 5:36 AM',
+    'Maharani Bagh - 5:41 AM',
+    'Gurudwara Bala Sahib - 5:43 AM',
+    'Sarai Kale Khan - 5:48 AM',
+    'Nizamuddin - 5:51 AM',
+    'P.W.D. Office NH 24 - 5:55 AM',
+    'Khelgaon - 5:57 AM',
+    'Noida Crossing (NH-24) - 6:01 AM',
+    'Samaspur Jagir Village - 6:02 AM',
+    'Mother Dairy - 6:04 AM',
+    'Ganesh Nagar - 6:04 AM',
+    'S3 Sakar Pur School Block - 6:08 AM',
+    'S1 Sakar Pur School Block - 6:09 AM',
+    'Laxmi Nagar Metro Station - 6:09 AM',
+    'Laxmi Nagar - 6:10 AM',
+    'Shakar Pur - 6:12 AM',
+    'Shakar Pur Crossing - 6:13 AM',
+    'Nirman Vihar - 6:14 AM',
+    'Swasthya Vihar - 6:16 AM',
+    'New Rajdhani Enclave - 6:17 AM',
+    'Karkardooma Crossing - 6:18 AM',
+    'Hasanpur Depot - 6:22 AM',
+    'Hasanpur Village - 6:24 AM',
+    'Telco Gazipur - 6:25 AM',
+    'Gazipur Depot - 6:27 AM',
+    'Maharajpur Check Post - 6:28 AM',
+    'Anand Vihar ISBT Terminal - 6:29 AM'
+],
+'Bus Number 874': [
+                'Uttam Nagar Terminal - 5:07 AM',
+                'A-1 Janakpuri - 5:07 AM',
+                'Tilak Pul - 5:09 AM',
+                'Jeevan Park - 5:10 AM',
+                'C-1 Janakpuri - 5:12 AM',
+                'Mata Chanan Devi Hospital - 5:12 AM',
+                'C-2 Janakpuri - 5:14 AM',
+                'C-2B Janakpuri - 5:16 AM',
+                'C-4E Janakpuri - 5:18 AM',
+                'Janakpuri Central Market - 5:19 AM',
+                'C-4H Janakpuri - 5:20 AM',
+                'C-5A Janakpuri - 5:21 AM',
+                'Desu Colony - 5:23 AM',
+                'Vashisht Park - 5:24 AM',
+                'D Block Janakpuri - 5:25 AM',
+                'Lajwanti Garden - 5:26 AM',
+                'Nangal Raya - 5:27 AM',
+                'Janak Setu - 5:29 AM',
+                'Supply Depot - 5:33 AM',
+                'Kirbi Place - 5:35 AM',
+                'Thimaya Park - 5:37 AM',
+                'Thimaya Park - 5:38 AM',
+                'Carriappa Vihar - 5:39 AM',
+                'Raj Rif. Center - 5:43 AM',
+                'Arjan Vihar - 5:45 AM',
+                'Golf Sports - 5:46 AM',
+                'Dhaula Kuan Bus Stop - 5:48 AM',
+                'Satya Niketan - 5:51 AM',
+                'Moti Bagh Gurudwara Nanakpura - 5:53 AM',
+                'South Moti Bagh - 5:54 AM',
+                'North Moti Bagh - 5:56 AM',
+                'Aradhna Enclave - 5:57 AM',
+                'R.K. Puram Sector 13 - 5:59 AM',
+                'Hyatt Hotel - 6:00 AM',
+                'Africa Avenue - 6:02 AM',
+                'Nauroji Nagar Bus Stop - 6:04 AM',
+                'Raj Nagar - 6:05 AM',
+                'S J Hospital - 6:07 AM',
+                'A.I.I.M.S. - 6:10 AM',
+                'South Extension - 6:13 AM',
+                'Andrews Ganj - 6:16 AM',
+                'Central School - 6:19 AM',
+                'Lady Shri Ram College - 6:20 AM',
+                'Kailash Colony - 6:22 AM',
+                'Sant Nagar - 6:24 AM',
+                'Nehru Place - 6:26 AM',
+                'Paras Cinema - 6:28 AM',
+                'Kalkaji Mandir Bus Stop - 6:31 AM',
+                'Govind Puri Metro Station - 6:32 AM',
+                'Kalkaji Depot - 6:35 AM',
+                'C Lal Chowk - 6:36 AM',
+                'Okhla Industries Area - 6:37 AM',
+                'Crown Plaza - 6:38 AM',
+                'Bank Okhla - 6:40 AM',
+                'Okhla Phase 1 - 6:43 AM',
+                'E.S.I. Hospital - 6:45 AM',
+                'Tehkhand Depot - 6:47 AM',
+                'Okhla More - 6:49 AM',
+                'Prem Nagar - 6:49 AM',
+                'Lal Kuan - 6:51 AM',
+                'Suraj Kund Crossing - 6:53 AM',
+                'Prahlad Pur - 6:55 AM',
+                'Rajiv Gandhi Stadium - 6:57 AM',
+                'Jaitpur Crossing - 6:58 AM',
+                'Badarpur Road - 6:59 AM',
+                'Badarpur Border - 7:00 AM'
+            ]
+            // Add more routes as needed
+        };
+
+        // Function to display bus route details
+        function displayBusRoute(routeNumber) {
+            const routeData = busRoutes[routeNumber];
+            if (routeData) {
+                // Create a flow chart for route details
+                const flowChart = document.createElement('div');
+                flowChart.classList.add('route-flow-chart');
+
+                // Add route title
+                const title = document.createElement('h2');
+                title.textContent = routeNumber;
+                flowChart.appendChild(title);
+
+                // Create an HTML list to display route details
+                const list = document.createElement('ul');
+                routeData.forEach(stop => {
+                    const listItem = document.createElement('li');
+                    listItem.textContent = stop;
+                    list.appendChild(listItem);
+                });
+                flowChart.appendChild(list);
+
+                // Clear previous route details and display the new flow chart
+                routeDetailsContainer.innerHTML = '';
+                routeDetailsContainer.appendChild(flowChart);
+            } else {
+                routeDetailsContainer.innerHTML = 'No data available for this route.';
+            }
+        }
+
+        // Event listeners for bus buttons
+        busButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const routeNumber = button.getAttribute('data-bus-number');
+                displayBusRoute(routeNumber);
+            });
+        });
+    </script>
+</body>
+</html>
