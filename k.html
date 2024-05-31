@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Bus Layout</title>
+    <style>
+        /* Add your CSS styles here for styling the page */
+        /* This is a basic example; you can customize it further */
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+        }
+
+        .bus-container {
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .bus-row {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .seat {
+            width: 40px;
+            height: 40px;
+            background-color: #ccc;
+            border: 1px solid #aaa;
+            text-align: center;
+            line-height: 40px;
+        }
+
+        .seat.available {
+            cursor: pointer;
+        }
+
+        .seat-booked {
+            background-color: #ff3300;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <div class="bus-container">
+        <h1>Bus Layout</h1>
+        <!-- Bus layout will be displayed here -->
+        <div id="busLayout">
+            <!-- Bus layout will be generated using JavaScript -->
+        </div>
+    </div>
+
+    <script>
+
+
+        function displayBusLayout() {
+            const busLayout = document.getElementById('busLayout');
+            busLayout.innerHTML = ''; // Clear existing layout
+
+            for (let row = 0; row < busLayoutData.length; row++) {
+                const busRow = document.createElement('div');
+                busRow.className = 'bus-row';
+
+                for (let seat = 0; seat < busLayoutData[row].length; seat++) {
+                    const seatDiv = document.createElement('div');
+                    seatDiv.className = `seat ${busLayoutData[row][seat] === 'X' ? 'available' : 'seat-booked'}`;
+                    seatDiv.innerText = `${row + 1}-${seat + 1}`;
+                    seatDiv.addEventListener('click', () => onSeatClick(seatDiv, row, seat));
+                    busRow.appendChild(seatDiv);
+                }
+
+                busLayout.appendChild(busRow);
+            }
+        }
+
+        function onSeatClick(seatDiv, row, seat) {
+            if (busLayoutData[row][seat] === 'X') {
+                // Toggle the seat status (available/booked)
+                busLayoutData[row][seat] = 'O';
+                seatDiv.classList.remove('available');
+                seatDiv.classList.add('seat-booked');
+            } else {
+                busLayoutData[row][seat] = 'X';
+                seatDiv.classList.remove('seat-booked');
+                seatDiv.classList.add('available');
+            }
+        }
+
+        // Initial display
+        displayBusLayout();
+    </script>
+</body>
+</html>

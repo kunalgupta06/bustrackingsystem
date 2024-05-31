@@ -1,0 +1,663 @@
+* {
+    margin: 0;
+    padding: 0;
+    /* background: url(img/back\ img1.jpg); */
+}
+
+ .main {
+    width: 100%;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.5)50%, rgba(0, 0, 0, 0.5)50%), url(img/back\ img1.jpg);
+    /* juan￾encalada-6mcVaoGNz1w-unsplash.jpg */
+    background-position: center;
+    background-size: cover;
+    height: 100vh;
+} 
+
+
+.logo img{
+    height: 29PX;
+    width: 29px;
+    /* border: 2px solid red; */
+    border-radius: 60%;
+    position: relative;
+    top: -6px;
+    margin: 2px;
+}
+
+.navbar {
+    width: 1200px;
+    height: 75px;
+    margin: auto;
+    display: flex;
+    /* border: 2px solid rgb(7, 7, 7); */
+    position:relative;
+}
+/* .bg-dark{
+    opacity:0.4 
+}
+.bg-dark::before{
+    content: "";
+    position: absolute;
+    background-color: black;
+    /* top: 0px;
+    left: 0px; 
+    height: 100%;
+    width: 100%;
+    z-index: -1;
+    opacity:0.1 ;
+} */
+
+.navbar-nav {
+    /* margin-left:223px; */
+    justify-content: end;
+}
+.navbar-collapse{
+    flex-grow: 0;
+}
+.nav-item{
+    margin: 0px 27px;
+}
+.navbar-brand{
+    color: #fff;
+    font-size: 35px;
+}
+.navbar-brand:hover{
+    color: #fff;
+    font-size: 37px;
+}
+.nav-link{
+    color: #fff;
+    margin: 0px 34px;
+}
+
+
+
+/* .icon {
+    width: 200px;
+    float: left;
+    height: 70px;
+}*/
+
+/* .logo {
+    color: aliceblue;
+    font-size: 35px;
+    font-family: Arial;
+    padding-left: 20px;
+    float: left;
+    padding-top: 10px;
+    
+}  */
+
+.menu {
+    width: 400px;
+    float: left;
+    height: 70px;
+}
+
+ul {
+    float: left;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+}
+
+ul li {
+    list-style: none;
+    margin-left: 62px;
+    margin-top: 27px;
+    font-size: 17px;
+    display: inline-block;
+}
+
+ul li a {
+    text-decoration: none;
+    color: white;
+    font-family: Arial;
+    font-weight: bold;
+    transition: 0.2s ease-in-out;
+}
+
+ul li a:hover {
+    color: darkblue
+}
+
+.search {
+    width: 330px;
+    float: left;
+    margin-left:44px;
+}
+
+.srch {
+    font-family: 'Times New Roman';
+    width: 200px;
+    height: 40px;
+    background: transparent;
+    border: 2px solid #000000;
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+    margin-top: 4px;
+    margin-right: 2px;
+    color: #fff;
+    /* border-right: none; */
+    font-size: 16px;
+    float: left;
+    padding: 10px;
+    /* border-bottom-left-radius: 5px;
+    border-top-left-radius: 5px; */
+}
+
+.btn {
+    width: 100px;
+    height: 40px;
+    /* background: rgba(0, 138, 252, 0.425);*/
+    border: 2px solid rgb(0, 0, 0); 
+    background-color: #0004ff;
+    margin-top: 4px;
+
+    color: rgb(255, 255, 255);
+    font-size: 13px;
+    border-bottom-right-radius: 5px;
+    border-top-right-radius: 5px;
+    font-weight: bold;
+    transition: 0.2s ease;
+    cursor: pointer;
+}
+
+.btn:focus {
+    outline: none;
+}
+
+.srch:focus {
+    outline: none;
+}
+
+.content {
+    width: 1200px;
+    height: auto;
+    margin: auto;
+    color: #fff;
+    position: relative;
+}
+
+.content .par {
+    padding-left: 20px;
+    font-family: Arial;
+    letter-spacing: 1.2px;
+    line-height: 30px;
+    font-size: 20px;
+
+}
+
+.par {
+    white-space: nowrap;
+    overflow: hidden;
+    animation:
+        typing 2s,
+        cursor .4s step-end infinite alternate;
+}
+
+@keyframes cursor {
+    50% {
+        border-color: transparent;
+    }
+}
+
+@keyframes typing {
+    from {
+        width: 0;
+    }
+}
+
+.content h1 {
+    font-family: 'Times New Roman';
+    font-size: 70px;
+    padding-left: 20px;
+    margin-top: 9%;
+    letter-spacing: 2px;
+}
+
+.content .cn {
+    width: 160px;
+    height: 40px;
+    background: rgb(0, 85, 170);
+    margin-bottom: 10px;
+    margin-left: 20px;
+    font-size: 18px;
+    font-weight: bold;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: .4s ease;
+}
+
+.content .cn a {
+    text-decoration: none;
+    color: #ffffff;
+    transition: .3s ease;
+}
+
+.cn:hover {
+    /* background-color: rgb(200, 255, 0); */
+    background: transparent;
+ 
+}
+
+.form {
+    width: 25vw;
+    height: auto;
+    background: linear-gradient(to top, rgba(0, 0, 0,0.5 )50%, rgba(0, 0, 0, 0.5)50%);
+    position: absolute;
+    top: -37px;
+    left: 50%; /* Center the form horizontally */
+    transform: translateX(-50%);
+    border-radius: 10px;
+    padding: 15px;
+}
+
+.form h2 {
+    text-align: center;
+    font-family: sans-serif;
+    font-size: 30px;
+    margin-top: 0px;
+}
+
+.form input {
+    width: 100%;
+    height: 45px;
+    background: transparent;
+    border-radius: 1px solid #000000;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+    color: #ffffff;
+    letter-spacing: 1px;
+    margin-top: 10px;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    font-size: 17px;
+    padding: 5px;
+    box-sizing: border-box;
+}
+
+.form input:focus {
+    outline: none;
+}
+
+::placeholder {
+    color: #ffffff;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.btnn {
+    width: 100%;
+    height: 40px;
+    background: rgb(0, 85, 170);
+    margin-top: 22px;
+    margin-bottom: 22px;
+    font-size: 20px;
+    border-radius: 10px;
+    border-color: #000000;
+    cursor: pointer;
+    color: rgb(255, 255, 255);
+}
+
+.btnn:hover {
+    background: transparent;
+    background-color: #198754;
+    transition: .3s ease-in-out;
+}
+
+.btnn a {
+    text-decoration: none;
+    color: rgb(255, 255, 255);
+}
+
+.form .link {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 17px;
+    padding-bottom: 8px;
+    margin-bottom: 8PX;
+    text-align: center;
+}
+
+.form .link a {
+    text-decoration: none;
+    color: #0004ff;
+    text-align: center;
+}
+
+.liw {
+    padding-top: 5px;
+    padding-bottom: 5px;
+    text-align: center;
+    margin-bottom: 10PX;
+}
+
+.icons
+{
+    padding-left: 1.5vw;
+    align-items: center;
+}
+
+.icons a {
+    text-decoration: none;
+    color: #fff;
+    
+}
+
+.icons ion-icon {
+    color: #fff;
+    font-size: 30px;
+    padding-left: 14px;
+    padding-top: 5px;
+    transition: 0.3s ease;
+}
+
+.icons ion-icon:hover {
+    color: #ff7200;
+}
+
+.last {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+}
+/* .last a{
+    text-decoration: underline;
+   color: rgb(253, 251, 251);
+} */
+.last :hover{
+    color: rgb(253, 251, 251);
+}
+
+@media (max-width: 768px) {
+    .form {
+        width: 80vw;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+}
+
+.form2 {
+    width: 543px;
+    height: 441px;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.5)50%, rgba(0, 0, 0, 0.5)50%);
+    position: absolute;
+    top: -41px;
+    left: 656px;
+    border-radius: 10px;
+    padding: 25px;
+}
+
+.form2 h2 {
+    text-align: center;
+    font-family: sans-serif;
+    font-size: 30px;
+    margin-top: 20px;
+}
+
+.form2 input {
+    width: 240px;
+    height: 45px;
+    background: transparent;
+    border-radius: 1px solid #000000;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+    color: #ffffff;
+    letter-spacing: 1px;
+    margin-top: 10px;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    font-size: 17px;
+}
+
+.btnnn {
+    width: 240px;
+    height: 40px;
+    background: rgb(0, 85, 170);
+    margin-top: 25px;
+    margin-bottom: 25px;
+    font-size: 20px;
+    border-radius: 10px;
+    cursor: pointer;
+    color: rgb(255, 255, 255);
+}
+
+.btnnn:hover {
+    background: rgb(0, 0, 0);
+    color: #a00000;
+    transition: .3s ease-in-out;
+}
+
+.btnnn a {
+    text-decoration: none;
+
+    color: rgb(255, 255, 255);
+}
+
+.form {
+    width: 25vw;
+    height: auto;
+    background: linear-gradient(to top, rgba(0, 0, 0,0.5 )50%, rgba(0, 0, 0, 0.5)50%);
+    border-radius: 10px;
+    padding: 15px;
+    position: absolute;
+    top: 118%; /* Adjust the top position */
+    left: 70%; /* Adjust the right position */
+    transform: translateY(-50%);
+}
+
+/* Other styles remain the same */
+
+/* Media query for responsiveness */
+@media (max-width: 768px) {
+    .form {
+        width: 80vw;
+        right: 20%; /* Adjust for smaller screens if needed */
+    }
+}
+
+.form .liw {
+    text-align: center;
+    margin-bottom: 10PX;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.form .liw .icons {
+    display: flex;
+    align-items: center;
+}
+
+.icons a {
+    text-decoration: none;
+    color: #fff;
+    display: inline-block;
+    margin: 5px;
+
+}
+
+.icons ion-icon {
+    font-size: 30px;
+    transition: 0.3s ease;
+}
+
+.icons ion-icon:hover {
+    color: #ff7200;
+    transform: scale(1.2);
+}
+/* Existing CSS styles (including the styles for the contact button hover effect) */
+
+/* Additional CSS for Contact Dialogue */
+.contact-dialogue {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(0, 0, 0, 0.8);
+    color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    z-index: 9999;
+}
+
+.dialogue-content {
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+.close-dialogue {
+    background-color: #fff;
+    color: #000;
+    border: none;
+    padding: 10px 20px;
+    margin-top: 20px;
+    cursor: pointer;
+}
+/* End of Additional CSS for Contact Dialogue */
+/* Existing CSS styles (including the styles for the contact button hover effect) */
+
+/* Additional CSS for Contact Dialogue */
+.contact-dialogue {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background-color: rgba(0, 0, 0, 0.8);
+    color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    z-index: 9999;
+    width: 200px; /* Adjust the width as needed */
+}
+
+/* Modify the hover effect for the contact button */
+.contact-button:hover + .contact-dialogue {
+    display: block;
+}
+
+/* Close the dialogue when moving the cursor out of the contact area */
+.nav-item:hover:not(.contact-item) .contact-dialogue {
+    display: none;
+}
+
+/* End of Additional CSS for Contact Dialogue */
+
+/* Existing CSS styles (including the styles for the contact button hover effect) */
+
+/* Additional CSS for Contact Dialogue */
+.contact-dialogue {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background-color: rgba(0, 0, 0, 0.8);
+    color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    z-index: 9999;
+    width: 200px; /* Adjust the width as needed */
+}
+
+/* Modify the hover effect for the contact button */
+.contact-button:hover + .contact-dialogue {
+    display: block;
+}
+
+/* Automatically close the dialogue when moving the cursor out of the contact area */
+.nav-item:hover:not(.contact-item) .contact-dialogue {
+    display: none;
+}
+
+/* End of Additional CSS for Contact Dialogue */
+/* Your existing CSS styles */
+
+/* Additional CSS for Contact Dialogue */
+.contact-dialogue {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 1250px;
+    background-color: rgba(0, 0, 0, 0.8);
+    color: #fff;
+    padding: 10px;
+    border-radius: 10px;
+    text-align: center;
+    z-index: 9999;
+    width: 200px; /* Adjust the width as needed */
+}
+
+/* Modify the hover effect for the contact button */
+.contact-button:hover + .contact-dialogue {
+    display: block;
+}
+
+/* Automatically close the dialogue when moving the cursor out of the contact area */
+.nav-item:hover:not(.contact-item) .contact-dialogue {
+    display: none;
+}
+
+/* End of Additional CSS for Contact Dialogue */
+
+/* Your existing CSS styles */
+
+/* Additional CSS for Contact Dialogue */
+.contact-dialogue {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0; /* Adjust the left position to 0 to align with the contact button */
+    background-color: rgba(0, 0, 0, 0.8);
+    color: #fff;
+    padding: 10px;
+    border-radius: 10px;
+    text-align: center;
+    z-index: 9999;
+    width: 200px; /* Adjust the width as needed */
+}
+
+/* Modify the hover effect for the contact button */
+.contact-button:hover + .contact-dialogue {
+    display: block;
+}
+
+/* Automatically close the dialogue when moving the cursor out of the contact area */
+.nav-item:hover:not(.contact-item) .contact-dialogue {
+    display: none;
+}
+/* End of Additional CSS for Contact Dialogue */
+
+/* Your existing CSS styles */
+
+/* Additional CSS for Contact Dialogue */
+.contact-dialogue {
+    display: none;
+    position: absolute;
+    top: 100%; /* Position it below the contact button */
+    left: 90%; /* Center it horizontally relative to the contact button */
+    transform: translateX(-50%); /* Center it horizontally */
+    background-color: rgba(0, 0, 0, 0.8);
+    color: #fff;
+    padding: 10px;
+    border-radius: 10px;
+    text-align: center;
+    z-index: 9999;
+    background: linear-gradient();
+    width: 250px; /* Adjust the width as needed */
+    height: auto;
+}
+
+/* Modify the hover effect for the contact button */
+.contact-button:hover + .contact-dialogue {
+    display: block;
+}
+
+/* Automatically close the dialogue when moving the cursor out of the contact area */
+.nav-item:hover:not(.contact-item) .contact-dialogue {
+    display: none;
+}
+/* End of Additional CSS for Contact Dialogue */

@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Location Search with Map</title>
+    
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAjp4iByXNs1WhTJlkAZ6ZCJDE4HlF_x3k&libraries=places"></script>
+    <style>
+     
+        #container {
+            display: flex;
+        }
+
+        
+        #left-panel {
+            flex: 1;
+            background-color: #f0f0f0;
+            padding: 20px;
+        }
+
+        
+        #search-box {
+            margin-bottom: 20px;
+            background-color: #fff;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        
+        .location-name {
+            margin-bottom: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        .location-name:hover {
+            background-color: #e0e0e0;
+        }
+
+     
+        .location-icon {
+            margin-right: 10px;
+            font-size: 24px;
+            display: none; 
+        }
+
+     
+        #map-container {
+            flex: 2;
+            height: 100vh;
+            position: fixed;
+            top: 0; 
+        }
+
+        
+        .info-section {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .info-section h3 {
+            margin: 0;
+            font-size: 18px;
+            color: #007acc; 
+        }
+
+        .info-value {
+            font-size: 16px;
+            margin-top: 5px;
+        }
+
+       
+        .seaBlue {
+            color: #007acc; 
+        }
+
+        
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #f9f9f9;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+        }
+
+        .dropdown:hover .dropdown-content {
+            display: block;
+
+        }
+        #centered-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px; 
+}
+
+#bus-routes-button {
+    background-color: #007acc;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#bus-routes-button:hover {
+    background-color: #005a99;
+}
+    </style>
+</head>
+<body>
+    <div id="container">
+        
+        <div id="left-panel">
+            <h2>Locations</h2>
+            <div id="location-list"></div>
+            <div class="info-section" id="distance-info">
+                <h3>Distance</h3>
+                <p class="info-value"></p>
+            </div>
+            <div class="info-section" id="time-info">
+                <h3>Total Time</h3>
+                <p class="info-value"></p>
+            </div>
+            <div style="margin-top: 20px;"></div>
+            <div id="centered-button">
+      
+            <button id="bus-routes-button">Bus Routes</button>
+            </div>
+        </div>
+
+      
+        <div id="map-container"></div>
+    </div>
+
+    <script>
+        
+        let map;
+        let searchBox;
+        let userMarker;
+        let circle; 
+        let directionsRenderer; 
+        let selectedRouteDistance = 0; 
+        let selectedRouteDuration = 0; 
+        const demoCoordinates = [
+            { name: 'Azad Bhawan', latitude: 28.625860, longitude: 77.245572, busNumbers: ['318- Sarai Kale khan ISBT Terminal', '318STL- Sarai Kale khan ISBT Terminal', '375- Nehru place Terminal'], details: 'Located near Sarai Kale Khan' },
+            { name: 'ITO', latitude: 28.627340, longitude: 77.247840, busNumbers: ['TMS(+) Mayapuri','OTMS(+) Punjabi Bagh','412- Nehru Place Terminal','TMS(+) Lajpat Nagar'], details: 'Central Delhi location' },
+            { name: 'Punjabi Bagh', latitude: 28.668547, longitude: 77.135950, busNumbers: ['567- Lajpat Nagar','974-Kamruddin Nagar','569-Sultanpuri','479- CL Badarpur Border'], details: 'Western Delhi location' },
+            { name: 'Connought Place', latitude: 28.634000, longitude: 77.216000, busNumbers: ['433-Badarpur Border','460-Badarpur Border','505-Mehrauli Terminal','894CL Unani Hospital/Okhla Ext','Thokar 3'], details: 'Central Delhi shopping district' },
+            { name: 'Loha Pul', latitude: 28.661546, longitude: 77.245142, busNumbers: ['120B- Kendriya Terminal','120- Mori Gate','261- Sarai Kale Khan'], details: 'Near Sarai Kale Khan' },
+            { name: 'Dhaula Kuan', latitude: 28.597527, longitude: 77.164188, busNumbers: ['TMS(-)- Wazirpur Depot','448-Sangam Vihar','210- Gurugram Bus Stand','728EXT- Madhu Vihar'], details: 'Located in South Delhi' },
+            { name: 'Badarpur', latitude: 28.498497, longitude: 77.297435, busNumbers: ['473- Anand Vihar ISBT','479- Wazirpur Depot(D-Mail)','460CL- Minto Road Terminal'], details: 'Located in South Delhi' },
+            { name: 'Inner Ring Road, Delhi', latitude: 28.662000, longitude: 77.239000, busNumbers: ['AG-34 Bijli Ghar Chauraha','Pinahat-Agra fort bus stop terminal'], details: 'Central Delhi location' },
+            { name: 'Nizzamuddin East Pumping Station', latitude: 28.587386, longitude: 77.248790, busNumbers: ['426E- Okhla Depot IV','405A- Badarpur Border','CBD2(+)- New Delhi Railway Station'], details: 'Near Sarai Kale Khan' },
+            { name: 'Shahdara bus stand', latitude: 28.6741, longitude: 77.2871, busNumbers: ['319- Noida Sec-43','720- Janakpuri B-1 Terminal','216CL- Shivaji Stadium Terminal','702A- Lajpat Nagar Ring Road'], details: 'Eastern Delhi location' }
+            
+        ];
+
+        function initMap() {
+            
+            map = new google.maps.Map(document.getElementById('map-container'), {
+                center: { lat: 20.5937, lng: 78.9629 }, 
+                zoom: 12, 
+            });
+
+            
+            const input = document.getElementById('location-input');
+            searchBox = new google.maps.places.SearchBox(input);
+
+            
+            map.addListener('bounds_changed', function () {
+                searchBox.setBounds(map.getBounds());
+            });
+
+          
+            trackLocation();
+            setInterval(trackLocation, 5000); 
+            populateLocationNames();
+
+           
+            directionsRenderer = new google.maps.DirectionsRenderer({
+                polylineOptions: {
+                    strokeColor: 'seaBlue', 
+                    strokeOpacity: 1.0,
+                    strokeWeight: 4,
+                },
+            });
+            directionsRenderer.setMap(map);
+        }
+
+        function trackLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function (position) {
+                    
+                    const userLocation = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+
+                    
+                    clearUserLocation();
+
+                    
+                    userMarker = new google.maps.Marker({
+                        map: map,
+                        position: userLocation,
+                        title: 'Your Location',
+                        icon: {
+                            path: google.maps.SymbolPath.SQUARE,
+                            scale: 10,
+                            fillColor: 'seaBlue', 
+                            fillOpacity: 0.8,
+                            strokeColor: 'white',
+                            strokeWeight: 2,
+                        },
+                    });
+
+                  
+                    circle = new google.maps.Circle({
+                        map: map,
+                        center: userLocation,
+                        radius: 100, 
+                        strokeColor: 'seaBlue', 
+                        strokeOpacity: 0.8,
+                        strokeWeight: 2,
+                        fillColor: 'seaBlue', 
+                        fillOpacity: 0.2,
+                    });
+
+                   
+                    map.setCenter(userLocation);
+                });
+            } else {
+                console.error('Geolocation is not supported by this browser.');
+            }
+        }
+
+        
+        function clearUserLocation() {
+            
+            if (userMarker) {
+                userMarker.setMap(null);
+            }
+
+            
+            if (circle) {
+                circle.setMap(null);
+            }
+        }
+
+        
+        function populateLocationNames() {
+            const locationList = document.getElementById('location-list');
+
+            for (const coord of demoCoordinates) {
+                const locationName = document.createElement('div');
+                locationName.classList.add('location-name');
+
+               
+                const dropdown = document.createElement('div');
+                dropdown.classList.add('dropdown');
+
+                
+                const icon = document.createElement('span');
+                icon.classList.add('location-icon');
+                icon.innerHTML = '&#x25BC;';
+
+                
+                const name = document.createElement('span');
+                name.textContent = coord.name;
+
+               
+                const dropdownContent = document.createElement('div');
+                dropdownContent.classList.add('dropdown-content');
+
+                for (const busNumber of coord.busNumbers) {
+                    const busInfo = document.createElement('p');
+                    busInfo.textContent = busNumber;
+                    dropdownContent.appendChild(busInfo);
+                }
+
+               
+                dropdown.appendChild(icon);
+                dropdown.appendChild(name);
+                dropdown.appendChild(dropdownContent);
+
+                locationName.appendChild(dropdown);
+
+                
+                locationName.addEventListener('click', function () {
+                    clearDirections(); 
+                    calculateAndDisplayDirections(coord.latitude, coord.longitude);
+                });
+
+                locationList.appendChild(locationName);
+            }
+        }
+
+      
+        function calculateAndDisplayDirections(destinationLat, destinationLng) {
+            const directionsService = new google.maps.DirectionsService();
+
+            directionsService.route(
+                {
+                    origin: userMarker.getPosition(),
+                    destination: new google.maps.LatLng(destinationLat, destinationLng),
+                    travelMode: 'DRIVING',
+                },
+                function (response, status) {
+                    if (status === 'OK') {
+                        directionsRenderer.setDirections(response);
+
+                       
+                        const route = response.routes[0];
+                        let totalDistance = 0;
+                        let totalDuration = 0;
+
+                        for (const leg of route.legs) {
+                            totalDistance += leg.distance.value;
+                            totalDuration += leg.duration.value;
+                        }
+
+                        
+                        const totalDistanceKm = totalDistance / 1000;
+
+                        
+                        const totalDurationMin = totalDuration / 60;
+
+                       
+                        const distanceInfo = document.querySelector('#distance-info .info-value');
+                        const timeInfo = document.querySelector('#time-info .info-value');
+                        distanceInfo.textContent = `${totalDistanceKm.toFixed(2)} km`;
+                        timeInfo.textContent = `${totalDurationMin.toFixed(2)} minutes`;
+                    } else {
+                        console.error('Directions request failed:', status);
+                    }
+                }
+            );
+        }
+
+        
+        function clearDirections() {
+            directionsRenderer.setDirections({ routes: [] });
+
+            
+            const distanceInfo = document.querySelector('#distance-info .info-value');
+            const timeInfo = document.querySelector('#time-info .info-value');
+            distanceInfo.textContent = '';
+            timeInfo.textContent = '';
+        }
+        const busRoutesButton = document.getElementById('bus-routes-button');
+        busRoutesButton.addEventListener('click', function () {
+            
+            window.location.href = '/busroute';
+        });
+        
+        initMap();
+    </script>
+</body>
+</html>

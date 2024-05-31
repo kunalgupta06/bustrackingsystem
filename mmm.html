@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Bus Routes and Arrival Times</title>
+    <style>
+        /* Styling for the left panel */
+        #left-panel {
+            position: absolute;
+            top: 0;
+            left: 0px;
+            /* Start with the panel closed */
+            width: 250px;
+            height: 100%;
+            background-color: #f0f0f0;
+            padding: 20px;
+            box-shadow: 2px 0px 5px rgba(0, 0, 0, 0.2);
+            z-index: 2;
+            transition: left 0.3s ease;
+        }
+
+        #left-panel.opened {
+            left: 0;
+            /* Open the panel */
+        }
+
+        /* Styling for the search container */
+        #search-container {
+            text-align: center;
+            /* Center align the search container */
+            margin-bottom: 20px;
+        }
+
+        #search-bar {
+            width: 70%;
+            /* Adjust the width as needed */
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+
+        #search-button {
+            width: 30%;
+            /* Adjust the width as needed */
+            padding: 10px;
+            background-color: #007acc;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #search-button:hover {
+            background-color: #005a99;
+        }
+
+        /* Styling for the bus buttons container */
+        #bus-buttons-container {
+            margin-top: 20px;
+            /* Adjust the margin to control the gap between search and buttons */
+        }
+
+        /* Styling for the bus buttons */
+        .bus-button {
+            display: block;
+            /* Show all buttons by default */
+            width: 100%;
+            padding: 10px;
+            background-color: #0074D9;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            /* Add border radius for slightly rounded button ends */
+            font-size: 16px;
+            cursor: pointer;
+            margin-bottom: 10px;
+            /* Adjust the margin to control the gap between buttons */
+            text-align: center;
+        }
+
+        .bus-button:hover {
+            background-color: #005a99;
+        }
+
+        /* Styling for the route details container */
+        #route-details {
+            margin-left: 270px;
+            /* Adjust for the width of the left panel */
+            padding: 20px;
+        }
+
+        /* Styling for the bus route flow chart */
+        .route-flow-chart {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 20px;
+            box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .route-flow-chart h2 {
+            color: #0074D9;
+            font-size: 24px;
+            margin-bottom: 15px;
+        }
+
+        .route-flow-chart ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .route-flow-chart li {
+            margin-bottom: 10px;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .route-flow-chart li:before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: #0074D9;
+        }
+
+        #map {
+            margin-top: 0px;
+            margin-left: 290px;
+            width: 84vw;
+            height: 60vh;
+        }
+    </style>
+</head>
+
+<body>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAjp4iByXNs1WhTJlkAZ6ZCJDE4HlF_x3k&callback=initMap"
+        async defer></script>
+    <!-- Left panel --> -->
+    <div id="left-panel">
+        <div id="search-container">
+            <input type="text" id="search-bar" placeholder="Search Bus Number">
+            <button id="search-button">Search</button>
+        </div>
+        <div id="bus-buttons-container">
+            <button class="bus-button" data-bus-number="Bus Number 433" onclick="show_routes_433()">Bus Number
+                433</button>
+            <button class="bus-button" data-bus-number="Bus Number 889">Bus Number 889</button>
+            <button class="bus-button" data-bus-number="Bus Number 469">Bus Number 469</button>
+            <button class="bus-button" data-bus-number="Bus Number 4">Bus Number 4</button>
+            <!-- Add more buttons for other bus routes as needed -->
+        </div>
+    </div>
+    <div id='map'></div>
+
+    <!-- Route details container -->
+    <div id="route-details"> -->
+        <!-- Bus route details will be displayed here -->
+    </div>
+</body>
+
+</html>
+<!-- JavaScript -->
+<script>
+    const busRoutes = {
+        'Bus Number 433': [
+            'Badarpur Border - 6:00 AM',
+            'Jaitpur Crossing - 6:01 AM',
+            'Power House - 6:05 AM',
+            'Onida Factory - 6:08 AM',
+            'Aali Village - 6:09 AM',
+            'Haldiram / Mohan Estate Metro Station - 6:10 AM',
+            'Maruti Factory - 6:12 AM',
+            'Madanpur Khadar - 6:14 AM',
+            'Sarita Vihar - 6:16 AM',
+            'Sarita Vihar Crossing - 6:19 AM',
+            'Jasola Vihar - 6:21 AM',
+            'Shahin Bagh - 6:23 AM',
+            'Kalindi Kunj - 6:25 AM',
+            'Sector 94 - 6:31 AM',
+            'Sector 18/37 - 6:37 AM',
+            'Botanical Garden - 6:38 AM',
+            'Noida Sector 28 - 6:41 AM',
+            'Sector 18 - 6:43 AM',
+            'Rajnigandha Chowk - 6:45 AM',
+            'Sector 16 Noida Metro Station - 6:46 AM',
+            'Noida Sector 3 - 6:47 AM',
+            'Noida Sector 15 - 6:49 AM',
+            'Noida Sector 15 Bus Station - 6:50 AM',
+            'Sector 15 - 6:51 AM',
+            'Mayur Kunj - 6:53 AM',
+            'Mayur Place - 6:57 AM',
+            'Samachar Apartment - 7:00 AM',
+            'Mayur Vihar Phase 1 - 7:03 AM',
+            'Delhi Police Apartment - 7:04 AM',
+            'Akshardham Temple - 7:09 AM',
+            'Samaspur Jagir Village - 7:10 AM',
+            'Mother Dairy - 7:12 AM',
+            'Ganesh Nagar - 7:13 AM',
+            'S3 Sakar Pur School Block - 7:16 AM',
+            'S1 Sakar Pur School Block - 7:17 AM',
+            'Laxmi Nagar - 7:18 AM',
+            'Shakar Pur - 7:19 AM',
+            'Shakar Pur Crossing - 7:21 AM',
+            'Nirman Vihar - 7:22 AM',
+            'Swasthya Vihar - 7:24 AM',
+            'New Rajdhani Enclave - 7:25 AM',
+            'Karkardooma Crossing - 7:26 AM',
+            'Gagan Vihar - 7:27 AM',
+            'F1 Block Jagatpuri - 7:28 AM',
+            'A Block Jagatpuri - 7:30 AM',
+            'Radhey Puri - 7:31 AM',
+            'Arjun Nagar - 7:31 AM',
+            'Hans Apartment - 7:32 AM',
+            'East Krishna Nagar - 7:33 AM',
+            'Krishna Nagar A Block - 7:34 AM',
+            'Swarn Cinema - 7:35 AM',
+            'Krishna Nagar - 7:36 AM',
+            'Jheel Kuranja - 7:40 AM',
+            'Jheel - 7:40 AM'
+        ],
+        'Bus Number 889': [
+            'Rohini Sector 27 - 5:40 AM',
+            'B Block Shahbad Dairy - 5:46 AM',
+            'A Block Shahbad Dairy - 5:47 AM',
+            'Saint Xaviers School - 5:49 AM',
+            'Shahbad School - 5:50 AM',
+            'Shahbad Village - 5:52 AM',
+            'Delhi Engineering College - 5:53 AM',
+            'Rohini Sector 16 Crossing - 5:55 AM',
+            'Rohini Sector 16 - 5:58 AM',
+            'Rohini Sector 11 - 5:59 AM',
+            'Rithala Metro Station - 6:05 AM',
+            'Rajeev Gandhi Cancer Hospital - 6:07 AM',
+            'Rohini Sector 9 - 6:10 AM',
+            'Rohini East Metro - 6:14 AM',
+            'Madhuban Chowk - 6:14 AM',
+            'Madhuban Chowk - 6:15 AM',
+            'RU Block Pitampura - 6:17 AM',
+            'RU Block Pitampura - 6:17 AM',
+            'CD Block Pitampura - 6:18 AM',
+            'AP Block Pitampura - 6:19 AM',
+            'K.D. Block Pitampura - 6:21 AM',
+            'ND / DP Block Pitampura - 6:22 AM',
+            'D.D.A. Office / TV Tower - 6:24 AM',
+            'Shri Guru Gobind Singh College - 6:25 AM',
+            'Subhash Palace - 6:27 AM',
+            'Wazirpur Flyover - 6:28 AM',
+            'Shiv Mandir Shakurpur - 6:29 AM',
+            'Telephone Exchange - 6:30 AM',
+            'Britannia - 6:31 AM',
+            'Shakurpur Village - 6:34 AM',
+            'Punjabi Bagh - 6:36 AM',
+            'East Punjabi Bagh - 6:38 AM',
+            'Punjabi Bagh Crossing - 6:40 AM',
+            'Punjabi Bagh Club - 6:42 AM',
+            'E.S.I. Hospital - 6:44 AM',
+            'Rajdhani College - 6:46 AM',
+            'Rajouri Garden Market - 6:50 AM',
+            'Mayapuri Crossing - 6:53 AM',
+            'Government Press - 6:54 AM',
+            'Hari Nagar (Mohan Mandir) Mayapuri - 6:56 AM',
+            'Metal Forzing - 6:57 AM',
+            'Police Station Mayapuri - 6:59 AM',
+            'Gulab House - 7:00 AM',
+            'Junk Market - 7:03 AM',
+            'Maya Enclave BSES Office - 7:04 AM',
+            'Hari Nagar Clock Tower - 7:05 AM'
+        ],
+        'Bus Number 469': [
+            'Ambedkar Nagar Terminal - 5:00 AM',
+            'Ambedkar Nagar Depot - 5:00 AM',
+            'Khanpur Village - 5:02 AM',
+            'G Block Dakshin Puri - 5:02 AM',
+            'Devli Crossing - 5:03 AM',
+            'Vayusenabad (Tigri) - 5:04 AM',
+            'Batra Hospital / Satya Narayan Mandir - 5:06 AM',
+            'Hamdard Nagar / Sangam Vihar - 5:07 AM',
+            'Majidia Hospital - 5:09 AM',
+            'Hamdard Library - 5:10 AM',
+            'Guru Ravi Das Mandir - 5:11 AM',
+            'Tara Apartment - 5:13 AM',
+            'D.D.A. Flats Kalkaji - 5:15 AM',
+            'Hanuman Mandir - 5:16 AM',
+            'A Block D.D.A. Flats Kalkaji - 5:16 AM',
+            'Govindpuri Extention Bus Stop - 5:17 AM',
+            'Rampuri - 5:17 AM',
+            'Govind Puri Gali Number 5 - 5:19 AM',
+            'Govind Puri - 5:20 AM',
+            'Kalkaji Depot - 5:21 AM',
+            'Govind Puri Metro Station - 5:23 AM',
+            'Kalkaji Temple - 5:25 AM',
+            'N.S.I.C. - 5:26 AM',
+            'Modi Mill - 5:27 AM',
+            'Okhla Sabzi Mandi - 5:28 AM',
+            'Sri Niwas Puri Depot - 5:30 AM',
+            'C Block East of Kailash - 5:31 AM',
+            'B Block East of Kailash - 5:31 AM',
+            'Garhi Village - 5:33 AM',
+            'Lajpat Nagar Crossing - 5:34 AM',
+            'PGDAV College - 5:35 AM',
+            'Nehru Nagar - 5:36 AM',
+            'Maharani Bagh - 5:41 AM',
+            'Gurudwara Bala Sahib - 5:43 AM',
+            'Sarai Kale Khan - 5:48 AM',
+            'Nizamuddin - 5:51 AM',
+            'P.W.D. Office NH 24 - 5:55 AM',
+            'Khelgaon - 5:57 AM',
+            'Noida Crossing (NH-24) - 6:01 AM',
+            'Samaspur Jagir Village - 6:02 AM',
+            'Mother Dairy - 6:04 AM',
+            'Ganesh Nagar - 6:04 AM',
+            'S3 Sakar Pur School Block - 6:08 AM',
+            'S1 Sakar Pur School Block - 6:09 AM',
+            'Laxmi Nagar Metro Station - 6:09 AM',
+            'Laxmi Nagar - 6:10 AM',
+            'Shakar Pur - 6:12 AM',
+            'Shakar Pur Crossing - 6:13 AM',
+            'Nirman Vihar - 6:14 AM',
+            'Swasthya Vihar - 6:16 AM',
+            'New Rajdhani Enclave - 6:17 AM',
+            'Karkardooma Crossing - 6:18 AM',
+            'Hasanpur Depot - 6:22 AM',
+            'Hasanpur Village - 6:24 AM',
+            'Telco Gazipur - 6:25 AM',
+            'Gazipur Depot - 6:27 AM',
+            'Maharajpur Check Post - 6:28 AM',
+            'Anand Vihar ISBT Terminal - 6:29 AM'
+        ],
+        // Add more routes as needed
+    };
+    const list_433 = [
+        [28.4933, 77.3030],
+        [28.4856, 77.2914],
+        [28.5011, 77.2997],
+        [28.5085, 77.3083],
+        [28.5120, 77.3065],
+        [28.5143, 77.3077],
+        [28.5168, 77.3092],
+        [28.5192, 77.3106],
+        [28.5220, 77.3100],
+        [28.5268, 77.3107],
+        [28.5320, 77.3127],
+        [28.5372, 77.3149],
+        [28.5434, 77.3176],
+        [28.5570, 77.3170],
+        [28.5694, 77.3269],
+        [28.5707, 77.3321],
+        [28.5739, 77.3418],
+        [28.5730, 77.3558],
+        [28.5721, 77.3644],
+        [28.5693, 77.3733],
+        [28.5684, 77.3786],
+        [28.5676, 77.3836],
+        [28.5670, 77.3863],
+        [28.5662, 77.3889],
+        [28.5647, 77.3955],
+        [28.5635, 77.4021],
+        [28.5622, 77.4063],
+        [28.5610, 77.4098],
+        [28.5604, 77.4111],
+        [28.5615, 77.4252],
+        [28.5618, 77.4295],
+        [28.5626, 77.4310],
+        [28.5628, 77.4338],
+        [28.5635, 77.4372],
+        [28.5636, 77.4386],
+        [28.6304, 77.2786],
+        [28.6318, 77.2811],
+        [28.6330, 77.2827],
+        [28.6347, 77.2849],
+        [28.6369, 77.2880],
+        [28.6382, 77.2895],
+        [28.6400, 77.2907],
+        [28.6418, 77.2921],
+        [28.6432, 77.2936],
+        [28.6443, 77.2950],
+        [28.6451, 77.2965],
+        [28.6458, 77.2978],
+        [28.6465, 77.2993],
+        [28.6471, 77.3007],
+        [28.6479, 77.3021],
+        [28.6489, 77.3036],
+        [28.6500, 77.3053],
+        [28.6542, 77.3097],
+        [28.6542, 77.3097]
+    ]
+
+    const list_889 =
+        [
+            [28.7328, 77.1121],  // Rohini Sector 27 - 5:40 AM
+            [28.7382, 77.1201],  // B Block Shahbad Dairy - 5:46 AM
+            [28.7394, 77.1211],  // A Block Shahbad Dairy - 5:47 AM
+            [28.7411, 77.1245],  // Saint Xaviers School - 5:49 AM
+            [28.7434, 77.1258],  // Shahbad School - 5:50 AM
+            [28.7472, 77.1282],  // Shahbad Village - 5:52 AM
+            [28.7496, 77.1292],  // Delhi Engineering College - 5:53 AM
+            [28.7578, 77.1317],  // Rohini Sector 16 Crossing - 5:55 AM
+            [28.7571, 77.1396],  // Rohini Sector 16 - 5:58 AM
+            [28.7581, 77.1491],  // Rohini Sector 11 - 5:59 AM
+            [28.7183, 77.1136],  // Rithala Metro Station - 6:05 AM
+            [28.7098, 77.1134],  // Rajeev Gandhi Cancer Hospital - 6:07 AM
+            [28.7137, 77.1072],  // Rohini Sector 9 - 6:10 AM
+            [28.7181, 77.1052],  // Rohini East Metro - 6:14 AM
+            [28.7187, 77.1107],  // Madhuban Chowk - 6:14 AM
+            [28.7189, 77.1107],  // Madhuban Chowk - 6:15 AM
+            [28.7187, 77.1154],  // RU Block Pitampura - 6:17 AM
+            [28.7187, 77.1154],  // RU Block Pitampura - 6:17 AM
+            [28.7183, 77.1161],  // CD Block Pitampura - 6:18 AM
+            [28.7184, 77.1175],  // AP Block Pitampura - 6:19 AM
+            [28.7183, 77.1195],  // K.D. Block Pitampura - 6:21 AM
+            [28.7182, 77.1211],  // ND / DP Block Pitampura - 6:22 AM
+            [28.7181, 77.1234],  // D.D.A. Office / TV Tower - 6:24 AM
+            [28.7177, 77.1240],  // Shri Guru Gobind Singh College - 6:25 AM
+            [28.7167, 77.1259],  // Subhash Palace - 6:27 AM
+            [28.7157, 77.1269],  // Wazirpur Flyover - 6:28 AM
+            [28.7152, 77.1281],  // Shiv Mandir Shakurpur - 6:29 AM
+            [28.7149, 77.1298],  // Telephone Exchange - 6:30 AM
+            [28.7146, 77.1315],  // Britannia - 6:31 AM
+            [28.7126, 77.1361],  // Shakurpur Village - 6:34 AM
+            [28.7109, 77.1385],  // Punjabi Bagh - 6:36 AM
+            [28.7093, 77.1412],  // East Punjabi Bagh - 6:38 AM
+            [28.7074, 77.1446],  // Punjabi Bagh Crossing - 6:40 AM
+            [28.7057, 77.1480],  // Punjabi Bagh Club - 6:42 AM
+            [28.7039, 77.1510],  // E.S.I. Hospital - 6:44 AM
+            [28.7020, 77.1542],  // Rajdhani College - 6:46 AM
+            [28.6978, 77.1544],  // Rajouri Garden Market - 6:50 AM
+            [28.6945, 77.1570],  // Mayapuri Crossing - 6:53 AM
+            [28.6933, 77.1583],  // Government Press - 6:54 AM
+            [28.6914, 77.1590],  // Hari Nagar (Mohan Mandir) Mayapuri - 6:56 AM
+            [28.6893, 77.1600],  // Metal Forzing - 6:57 AM
+            [28.6880, 77.1607],  // Police Station Mayapuri - 6:59 AM
+            [28.6871, 77.1613],  // Gulab House - 7:00 AM
+            [28.6833, 77.1628],  // Junk Market - 7:03 AM
+            [28.6821, 77.1635],  // Maya Enclave BSES Office - 7:04 AM
+            [28.6807, 77.1640]   // Hari Nagar Clock Tower - 7:05 AM
+        ]
+    const list_469 =
+        [
+            [28.4967, 77.2404],  // Ambedkar Nagar Terminal - 5:00 AM
+            [28.4973, 77.2377],  // Ambedkar Nagar Depot - 5:00 AM
+            [28.4999, 77.2368],  // Khanpur Village - 5:02 AM
+            [28.5042, 77.2319],  // G Block Dakshin Puri - 5:02 AM
+            [28.5089, 77.2268],  // Devli Crossing - 5:03 AM
+            [28.5137, 77.2219],  // Vayusenabad (Tigri) - 5:04 AM
+            [28.5187, 77.2199],  // Batra Hospital / Satya Narayan Mandir - 5:06 AM
+            [28.5234, 77.2180],  // Hamdard Nagar / Sangam Vihar - 5:07 AM
+            [28.5310, 77.2173],  // Majidia Hospital - 5:09 AM
+            [28.5331, 77.2153],  // Hamdard Library - 5:10 AM
+            [28.5351, 77.2138],  // Guru Ravi Das Mandir - 5:11 AM
+            [28.5383, 77.2120],  // Tara Apartment - 5:13 AM
+            [28.5417, 77.2084],  // D.D.A. Flats Kalkaji - 5:15 AM
+            [28.5435, 77.2071],  // Hanuman Mandir - 5:16 AM
+            [28.5435, 77.2071],  // A Block D.D.A. Flats Kalkaji - 5:16 AM
+            [28.5454, 77.2059],  // Govindpuri Extention Bus Stop - 5:17 AM
+            [28.5472, 77.2057],  // Rampuri - 5:17 AM
+            [28.5503, 77.2044],  // Govind Puri Gali Number 5 - 5:19 AM
+            [28.5525, 77.2038],  // Govind Puri - 5:20 AM
+            [28.5535, 77.2033],  // Kalkaji Depot - 5:21 AM
+            [28.5562, 77.2020],  // Govind Puri Metro Station - 5:23 AM
+            [28.5585, 77.2008],  // Kalkaji Temple - 5:25 AM
+            [28.5594, 77.1996],  // N.S.I.C. - 5:26 AM
+            [28.5603, 77.1984],  // Modi Mill - 5:27 AM
+            [28.5626, 77.1957],  // Okhla Sabzi Mandi - 5:28 AM
+            [28.5668, 77.1947],  // Sri Niwas Puri Depot - 5:30 AM
+            [28.5701, 77.2360],  // C Block East of Kailash - 5:31 AM
+            [28.5702, 77.2361],  // B Block East of Kailash - 5:31 AM
+            [28.5729, 77.2387],  // Garhi Village - 5:33 AM
+            [28.5750, 77.2403],  // Lajpat Nagar Crossing - 5:34 AM
+            [28.5759, 77.2413],  // PGDAV College - 5:35 AM
+            [28.5769, 77.2417],  // Nehru Nagar - 5:36 AM
+            [28.5681, 77.2542],  // Maharani Bagh - 5:41 AM
+            [28.5662, 77.2569],  // Gurudwara Bala Sahib - 5:43 AM
+            [28.5631, 77.2596],  // Sarai Kale Khan - 5:48 AM
+            [28.5602, 77.2618],  // Nizamuddin - 5:51 AM
+            [28.5576, 77.2659],  // P.W.D. Office NH 24 - 5:55 AM
+            [28.5554, 77.2691],  // Khelgaon - 5:57 AM
+            [28.5514, 77.2727],  // Noida Crossing (NH-24) - 6:01 AM
+            [28.5487, 77.2738],  // Samaspur Jagir Village - 6:02 AM
+            [28.5464, 77.2760],  // Mother Dairy - 6:04 AM
+            [28.5464, 77.2760],  // Ganesh Nagar - 6:04 AM
+            [28.5413, 77.2809],  // S3 Sakar Pur School Block - 6:08 AM
+            [28.5407, 77.2816],  // S1 Sakar Pur School Block - 6:09 AM
+            [28.5348, 77.2870],  // Laxmi Nagar Metro Station - 6:09 AM
+            [28.5342, 77.2875],  // Laxmi Nagar - 6:10 AM
+            [28.5323, 77.2889],  // Shakar Pur - 6:12 AM
+            [28.5314, 77.2901],  // Shakar Pur Crossing - 6:13 AM
+            [28.5295, 77.2917],  // Nirman Vihar - 6:14 AM
+            [28.5272, 77.2940],  // Swasthya Vihar - 6:16 AM
+            [28.5257, 77.2955],  // New Rajdhani Enclave - 6:17 AM
+            [28.5244, 77.2968],  // Karkardooma Crossing - 6:18 AM
+            [28.5201, 77.3006],  // Hasanpur Depot - 6:22 AM
+            [28.5178, 77.3034],  // Hasanpur Village - 6:24 AM
+            [28.5167, 77.3054],  // Telco Gazipur - 6:25 AM
+            [28.5149, 77.3077],  // Gazipur Depot - 6:27 AM
+            [28.5136, 77.3094],  // Maharajpur Check Post - 6:28 AM
+            [28.5124, 77.3107]   // Anand Vihar ISBT Terminal - 6:29 AM
+        ]
+
+    // Get references to DOM elements
+    const leftPanel = document.getElementById('left-panel');
+    const searchInput = document.getElementById('search-bar');
+    const searchButton = document.getElementById('search-button');
+    const busButtonsContainer = document.getElementById('bus-buttons-container');
+    const busButtons = document.querySelectorAll('.bus-button');
+    const routeDetailsContainer = document.getElementById('route-details');
+
+    // Event listener to handle bus number search
+    searchButton.addEventListener('click', () => {
+        const searchTerm = searchInput.value.trim();
+        if (searchTerm === "") {
+            // If the search box is empty, show all buttons
+            busButtonsContainer.appendChild(busButtonsContainer.querySelector('.bus-button'));
+        } else {
+            // Otherwise, filter and reorder buttons
+            const matchingButton = document.querySelector(`[data-bus-number="Bus Number ${searchTerm}"]`);
+            if (matchingButton) {
+                busButtonsContainer.insertBefore(matchingButton, busButtonsContainer.firstElementChild);
+            }
+        }
+    });
+
+
+    // Function to display bus route details
+    function displayBusRoute(routeNumber) {
+        const routeData = busRoutes[routeNumber];
+        if (routeData) {
+            // Create a flow chart for route details
+            const flowChart = document.createElement('div');
+            flowChart.classList.add('route-flow-chart');
+
+            // Add route title
+            const title = document.createElement('h2');
+            title.textContent = routeNumber;
+            flowChart.appendChild(title);
+
+            // Create an HTML list to display route details
+            const list = document.createElement('ul');
+            routeData.forEach(stop => {
+                const listItem = document.createElement('li');
+                listItem.textContent = stop;
+                list.appendChild(listItem);
+            });
+            flowChart.appendChild(list);
+
+            // Clear previous route details and display the new flow chart
+            routeDetailsContainer.innerHTML = '';
+            routeDetailsContainer.appendChild(flowChart);
+        } else {
+            routeDetailsContainer.innerHTML = 'No data available for this route.';
+        }
+    }
+
+
+    function show_routes_433() {
+        const route433Coordinates = { lat: 28.4933, lng: 77.3030 };
+
+        const map = new google.maps.Map(document.getElementById('map'), {
+            center: route433Coordinates,
+            zoom: 12
+        });
+
+        const markerIcon = {
+            url: "./blue.jpg",
+            scaledSize: new google.maps.Size(50, 50),
+        };
+
+        for (const coordinate of list_433) {
+            const marker = new google.maps.Marker({
+                position: { lat: coordinate[0], lng: coordinate[1] },
+                map: map,
+                icon: markerIcon,
+                title:coordinate[2]
+            });
+        }
+    }
+
+
+    function show_routes_469() {
+        const route469Coordinates = {lat: 28.4967, lng: 77.2404 };
+        const map = new google.maps.Map(document.getElementById('map'), {
+            center: route469Coordinates,
+            zoom: 12
+        });
+
+        const markerIcon = {
+            url: "./blue.jpg",
+            scaledSize: new google.maps.Size(50, 50),
+        };
+
+        for (const coordinate of list_469) {
+            const marker = new google.maps.Marker({
+                position: { lat: coordinate[0], lng: coordinate[1] },
+                map: map,
+                icon: markerIcon
+            });
+        }
+    }
+
+    function show_routes_889() {
+        const route889Coordinates = {lat: 28.7328,lng: 77.1121 };
+        const map = new google.maps.Map(document.getElementById('map'), {
+            center: route889Coordinates,
+            zoom: 12
+        });
+
+        const markerIcon = {
+            url: "./blue.jpg",
+            scaledSize: new google.maps.Size(50, 50),
+        };
+
+        for (const coordinate of list_889) {
+            const marker = new google.maps.Marker({
+                position: { lat: coordinate[0], lng: coordinate[1] },
+                map: map,
+                icon: markerIcon
+            });
+        }
+    }
+
+    // Event listeners for bus buttons
+    busButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            const routeNumber = button.getAttribute('data-bus-number');
+            displayBusRoute(routeNumber);
+            console.log(routeNumber);
+            if (routeNumber == "Bus Number 433") {
+                show_routes_433();
+            }
+            else if(routeNumber == "Bus Number 469")
+            {
+                show_routes_469();
+            }
+            else if(routeNumber == "Bus Number 889")
+            {
+                show_routes_889();
+            }
+        });
+    });
+
+
+
+    function initMap() {
+        map = new google.maps.Map(document.getElementById('map'), {
+            center: { lat: 28.604573962628272, lng: 77.03697434537078 },
+            zoom: 12,
+        });
+
+        // Create a search box and link it to the UI element
+        const input = document.getElementById('location-input');
+        searchBox = new google.maps.places.SearchBox(input);
+
+        // Bias the search results towards the current map's viewport
+        map.addListener('bounds_changed', function () {
+            searchBox.setBounds(map.getBounds());
+        });
+
+        // Populate the left panel with location names
+        populateLocationNames();
+
+        // Initialize the directions renderer
+        directionsRenderer = new google.maps.DirectionsRenderer({
+            polylineOptions: {
+                strokeColor: 'seaBlue', // Sea blue color
+                strokeOpacity: 1.0,
+                strokeWeight: 4,
+            },
+        });
+        directionsRenderer.setMap(map);
+    }
+
+    // Clear the user's location marker and circle
+    function clearUserLocation() {
+        // Remove the user's marker
+        if (userMarker) {
+            userMarker.setMap(null);
+        }
+
+        // Remove the user's circle
+        if (circle) {
+            circle.setMap(null);
+        }
+    }
+
+
+
+
+
+</script>
